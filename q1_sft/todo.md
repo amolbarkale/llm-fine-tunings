@@ -17,35 +17,35 @@
 ## 📝 Phase 2: Dataset Creation (25 examples total)
 
 ### Core Examples (10 required)
-- [ ] Write 3 factual Q&A examples
-  - [ ] Example 1: Geography question
-  - [ ] Example 2: Science question  
-  - [ ] Example 3: History question
+- [x] Write 3 factual Q&A examples
+  - [x] Example 1: Geography question (France capital)
+  - [x] Example 2: Science question (Photosynthesis)
+  - [x] Example 3: History question (Moon landing)
 
-- [ ] Write 3 polite tone examples
-  - [ ] Example 1: Translation request with "please"
-  - [ ] Example 2: Explanation request with courtesy
-  - [ ] Example 3: Help request with polite language
+- [x] Write 3 polite tone examples
+  - [x] Example 1: Translation request with "please"
+  - [x] Example 2: Explanation request with courtesy (coffee making)
+  - [x] Example 3: Help request with polite language (thank you email)
 
-- [ ] Write 2 length control pairs
-  - [ ] Short answer version
-  - [ ] Long/detailed answer version (same topic)
+- [x] Write 2 length control pairs
+  - [x] Short answer version (dogs - brief)
+  - [x] Long/detailed answer version (dogs - detailed)
 
-- [ ] Write 2 refusal cases
-  - [ ] Inappropriate/harmful request → polite refusal
-  - [ ] Another safety scenario → safe denial
+- [x] Write 2 refusal cases
+  - [x] Inappropriate/harmful request → polite refusal (hacking)
+  - [x] Another safety scenario → safe denial (bomb making)
 
 ### Additional Examples (15 mixed)
-- [ ] Write 5 general instruction examples
-- [ ] Write 5 helpful task examples
-- [ ] Write 5 conversational examples
+- [x] Write 5 general instruction examples (cooking, motivation, exercise, language learning, friendship)
+- [x] Write 5 helpful task examples (party planning, weather, book recommendations, money saving, morning routine)
+- [x] Write 5 conversational examples (meaning of life, stress management, diet advice, sleep improvement, math question)
 
 ### Dataset Quality Check
-- [ ] Format all examples as JSONL with proper message structure
-- [ ] Check for typos and grammar errors
-- [ ] Ensure consistent polite tone in all responses
-- [ ] Verify proper `{"messages": [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]}` format
-- [ ] Save as `dataset.jsonl`
+- [x] Format all examples as JSONL with proper message structure
+- [x] Check for typos and grammar errors
+- [x] Ensure consistent polite tone in all responses
+- [x] Verify proper `{"messages": [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]}` format
+- [x] Save as `dataset.jsonl` ✅ **26 examples created!**
 
 ---
 
