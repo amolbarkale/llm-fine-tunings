@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "question": "If a shirt costs $25 after a 20% discount, what was its original price?",
+    "answer": 31.25
+  },
+  {
+    "id": 2,
+    "question": "A recipe calls for 3/4 cup of flour. If you want to make 2/3 of the recipe, how much flour do you need?",
+    "answer": 0.5
+  },
+  {
+    "id": 3,
+    "question": "The average of 5 numbers is 12. If four of the numbers are 8, 10, 15, and 13, what is the fifth number?",
+    "answer": 14
+  },
+  {
+    "id": 4,
+    "question": "A car travels at an average speed of 60 miles per hour. How long will it take to travel 210 miles?",
+    "answer": 3.5
+  },
+  {
+    "id": 5,
+    "question": "What is 15% of 300?",
+    "answer": 45
+  },
+  {
+    "id": 6,
+    "question": "If x + 7 = 15, what is the value of 2x?",
+    "answer": 16
+  },
+  {
+    "id": 7,
+    "question": "A box contains 24 red balls and 16 blue balls. What is the ratio of red balls to the total number of balls?",
+    "answer": "3:5"
+  },
+  {
+    "id": 8,
+    "question": "What is the smallest positive integer that is divisible by both 4 and 6?",
+    "answer": 12
+  },
+  {
+    "id": 9,
+    "question": "If the perimeter of a square is 36 units, what is its area?",
+    "answer": 81
+  },
+  {
+    "id": 10,
+    "question": "A product's price increased from $50 to $60. What is the percentage increase?",
+    "answer": 20
+  }
+]
