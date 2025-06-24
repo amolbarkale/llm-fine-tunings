@@ -88,9 +88,9 @@
   - [ ] General help: "Help me write an email to my boss"
 
 ### Generate Responses
-- [ ] Test base model (before fine-tuning) on all 5 prompts
-- [ ] Test fine-tuned model on same 5 prompts
-- [ ] Document all responses
+- [x] Test base model (before fine-tuning) on all 6 prompts ✅ **Completed!**
+- [ ] Test fine-tuned model on same 6 prompts
+- [x] Document all responses in `before_after.md` ✅ **Baseline documented!**
 
 ### Analysis
 - [ ] Create comparison table in `before_after.md`
