@@ -54,3 +54,4 @@ docs/_build/
 .flaskenv       # Flask environment variables
 instance/       # Flask instance folder
 celerybeat-schedule # Celery beat schedule file
+trained_model/  

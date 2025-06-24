@@ -144,7 +144,7 @@ def train_model(model, tokenizer, train_dataset, output_dir="./trained_model"):
         args=training_args,
         train_dataset=train_dataset,
         data_collator=data_collator,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,  # Updated to avoid deprecation warning
     )
     
     # Train!
