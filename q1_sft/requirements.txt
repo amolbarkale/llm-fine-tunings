@@ -1,0 +1,19 @@
+# 🤖 Tiny SFT Project Dependencies
+# Core ML libraries
+torch>=2.0.0
+transformers>=4.35.0
+peft>=0.7.0
+datasets>=2.15.0
+
+# Utilities
+numpy>=1.24.0
+pandas>=2.0.0
+tqdm>=4.65.0
+
+# Optional but helpful
+accelerate>=0.24.0  # For faster training
+bitsandbytes>=0.41.0  # For quantization (optional)
+
+# Development tools (optional)
+jupyter>=1.0.0
+matplotlib>=3.7.0 
