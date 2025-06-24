@@ -2,22 +2,45 @@
   {
     "id": 1,
     "question": "A store offers a 20% discount on all items. If a jacket originally costs $150, and there is an additional 8% sales tax applied after the discount, what is the total amount a customer pays?",
-    "answer": 129.6
+    "gold_answer": 129.6,
+    "deterministic_answer": 129.6,
+    "self_consistency_answer": 129.6,
+    "confidence": 1.0,
+    "extracted_count": 10,
+    "deterministic_correct": true,
+    "self_consistency_correct": true
   },
   {
     "id": 2,
     "question": "Sarah invests $2,000 in an account that earns 4% simple interest annually. After 3 years, she withdraws all the money and invests it in another account that earns 6% compound interest annually. How much money does she have after 2 more years?",
-    "answer": 2379.68
+    "gold_answer": 2379.68,
+    "deterministic_answer": 2516.86,
+    "self_consistency_answer": 2516.86,
+    "confidence": 0.9,
+    "extracted_count": 10,
+    "deterministic_correct": false,
+    "self_consistency_correct": false
   },
   {
     "id": 3,
     "question": "A rectangular garden has a length that is 3 times its width. If the perimeter of the garden is 48 feet, what is the area of the garden in square feet?",
-    "answer": 108
+    "gold_answer": 108,
+    "deterministic_answer": 108.0,
+    "self_consistency_answer": 108.0,
+    "confidence": 0.9,
+    "extracted_count": 10,
+    "deterministic_correct": true,
+    "self_consistency_correct": true
   },
   {
     "id": 4,
     "question": "In a class of 30 students, 18 play basketball, 15 play soccer, and 8 play both sports. How many students play neither basketball nor soccer?",
-    "answer": 5
+    "gold_answer": 5,
+    "deterministic_answer": 5.0,
+    "self_consistency_answer": 5.0,
+    "confidence": 1.0,
+    "extracted_count": 10,
+    "deterministic_correct": true,
+    "self_consistency_correct": true
   }
 ]
-
