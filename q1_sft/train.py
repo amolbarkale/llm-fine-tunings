@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-🚀 Tiny SFT Training Script
-Fine-tune TinyLlama-1.1B-Chat-v1.0 to be more polite and helpful.
+🚀 Original Parameters SFT Training Script
+Fine-tune TinyLlama-1.1B-Chat-v1.0 with the original specified parameters.
 """
 
 import os
@@ -18,13 +18,17 @@ from peft import LoraConfig, get_peft_model
 from datasets import Dataset
 import logging
 
+# Force CPU usage for stability (avoid 4GB GPU limitation)
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+torch.set_num_threads(6)  # Increased for full training
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def load_dataset(file_path="dataset.jsonl"):
-    """Load and prepare the dataset"""
-    logger.info(f"📁 Loading dataset from {file_path}")
+    """Load the complete dataset"""
+    logger.info(f"📁 Loading FULL dataset from {file_path}")
     
     conversations = []
     with open(file_path, "r", encoding="utf-8") as f:
@@ -37,22 +41,21 @@ def load_dataset(file_path="dataset.jsonl"):
     logger.info(f"✅ Loaded {len(conversations)} conversations")
     return conversations
 
-def prepare_data(conversations, tokenizer, max_length=512):
-    """Convert conversations to tokenized format"""
+def prepare_data(conversations, tokenizer, max_length=512):  # ORIGINAL: 512 tokens
+    """Convert conversations to tokenized format with original max_length"""
     logger.info("🔄 Converting conversations to training format...")
     
     formatted_texts = []
     
     for conversation in conversations:
-        # Use the tokenizer's chat template
         formatted_text = tokenizer.apply_chat_template(
             conversation,
             tokenize=False,
-            add_generation_prompt=False  # We want the full conversation
+            add_generation_prompt=False
         )
         formatted_texts.append(formatted_text)
     
-    # Tokenize all texts
+    # Tokenize with original max_length
     tokenized = tokenizer(
         formatted_texts,
         truncation=True,
@@ -61,7 +64,6 @@ def prepare_data(conversations, tokenizer, max_length=512):
         return_tensors=None
     )
     
-    # Create dataset
     dataset = Dataset.from_dict({
         "input_ids": tokenized["input_ids"],
         "attention_mask": tokenized["attention_mask"]
@@ -71,35 +73,39 @@ def prepare_data(conversations, tokenizer, max_length=512):
     return dataset
 
 def setup_model_and_tokenizer(model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0"):
-    """Load model and tokenizer with LoRA configuration"""
+    """Load model and tokenizer with ORIGINAL LoRA configuration"""
     logger.info(f"🤖 Loading model: {model_name}")
+    logger.info(f"🔧 Using device: CPU (GPU disabled for stability)")
+    logger.info(f"💻 CPU threads: {torch.get_num_threads()}")
     
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
-    # Add pad token if missing (required for training)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
         tokenizer.pad_token_id = tokenizer.eos_token_id
     
-    # Load model
+    # Load model optimized for CPU
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
-        torch_dtype=torch.float16,
-        device_map="auto" if torch.cuda.is_available() else "cpu"
+        torch_dtype=torch.float32,
+        device_map=None,
+        low_cpu_mem_usage=True,
+        use_cache=False
     )
     
-    # Configure LoRA
+    model = model.to("cpu")
+    
+    # ORIGINAL LoRA Configuration
     lora_config = LoraConfig(
-        r=16,                # Rank
-        lora_alpha=32,      # Alpha scaling
-        lora_dropout=0.1,   # Dropout
+        r=16,                # ORIGINAL: 16
+        lora_alpha=32,       # ORIGINAL: 32
+        lora_dropout=0.1,
         bias="none",
         task_type="CAUSAL_LM",
-        target_modules=["q_proj", "v_proj", "k_proj", "o_proj"]  # Attention layers
+        target_modules=["q_proj", "v_proj", "k_proj", "o_proj"]  # ORIGINAL: All 4 modules
     )
     
-    # Apply LoRA
     model = get_peft_model(model, lora_config)
     
     # Print trainable parameters
@@ -109,33 +115,38 @@ def setup_model_and_tokenizer(model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0"):
     logger.info(f"📊 Trainable parameters: {trainable_params:,}")
     logger.info(f"📊 Total parameters: {total_params:,}")
     logger.info(f"📊 Trainable percentage: {100 * trainable_params / total_params:.2f}%")
+    logger.info(f"🎯 Using ORIGINAL LoRA settings: r=16, alpha=32, 4 target modules")
     
     return model, tokenizer
 
 def train_model(model, tokenizer, train_dataset, output_dir="./trained_model"):
-    """Train the model with specified parameters"""
-    logger.info("🚀 Starting training...")
+    """Train the model with ORIGINAL parameters"""
+    logger.info("🚀 Starting training with ORIGINAL parameters...")
     
-    # Training arguments
+    # ORIGINAL Training Arguments
     training_args = TrainingArguments(
         output_dir=output_dir,
-        num_train_epochs=3,
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=2,
-        learning_rate=5e-5,
-        warmup_steps=50,
-        logging_steps=10,
-        save_steps=100,
-        save_total_limit=2,
+        num_train_epochs=3,              # ORIGINAL: 3 epochs
+        per_device_train_batch_size=2,   # ORIGINAL: 2
+        gradient_accumulation_steps=2,   # ORIGINAL: 2
+        learning_rate=5e-5,              # ORIGINAL: 5e-5
+        warmup_steps=50,                 # ORIGINAL: 50
+        logging_steps=10,                # ORIGINAL: 10
+        save_steps=100,                  # ORIGINAL: 100
+        save_total_limit=2,              # ORIGINAL: 2
         remove_unused_columns=False,
         dataloader_drop_last=True,
-        report_to=None,  # Disable wandb/tensorboard for simplicity
+        report_to=None,
+        fp16=False,                      # CPU training
+        dataloader_num_workers=0,
+        optim="adamw_torch",
+        no_cuda=True,
     )
     
-    # Data collator for language modeling
+    # Data collator
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer,
-        mlm=False,  # We're doing causal LM, not masked LM
+        mlm=False,
     )
     
     # Create trainer
@@ -144,11 +155,11 @@ def train_model(model, tokenizer, train_dataset, output_dir="./trained_model"):
         args=training_args,
         train_dataset=train_dataset,
         data_collator=data_collator,
-        processing_class=tokenizer,  # Updated to avoid deprecation warning
+        processing_class=tokenizer,
     )
     
-    # Train!
-    logger.info("🎯 Training starting...")
+    # Train with original settings!
+    logger.info("🎯 Training starting with ORIGINAL parameters...")
     trainer.train()
     
     # Save the model
@@ -156,77 +167,125 @@ def train_model(model, tokenizer, train_dataset, output_dir="./trained_model"):
     trainer.save_model()
     tokenizer.save_pretrained(output_dir)
     
-    logger.info("✅ Training completed successfully!")
+    logger.info("✅ Original parameters training completed successfully!")
     return trainer
 
 def test_model(model, tokenizer):
-    """Quick test of the trained model"""
+    """Test the trained model with multiple examples"""
     logger.info("🧪 Testing the trained model...")
     
-    # Test conversation
-    test_messages = [
-        {"role": "user", "content": "Please explain what Python is."}
+    test_cases = [
+        "What is Python?",
+        "Please help me write a thank you email.",
+        "Could you please explain how to make coffee?",
+        "Tell me about dogs."
     ]
     
-    # Format using chat template
-    formatted_input = tokenizer.apply_chat_template(
-        test_messages,
-        tokenize=False,
-        add_generation_prompt=True
-    )
-    
-    # Tokenize
-    inputs = tokenizer(formatted_input, return_tensors="pt")
-    
-    # Generate
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=100,
-            do_sample=True,
-            temperature=0.7,
-            pad_token_id=tokenizer.eos_token_id
+    for i, question in enumerate(test_cases, 1):
+        test_messages = [{"role": "user", "content": question}]
+        
+        formatted_input = tokenizer.apply_chat_template(
+            test_messages,
+            tokenize=False,
+            add_generation_prompt=True
         )
-    
-    # Decode response
-    full_response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-    # Extract just the new part (after the input)
-    response_start = full_response.find(formatted_input) + len(formatted_input)
-    new_response = full_response[response_start:].strip()
-    
-    logger.info("📝 Sample generation:")
-    logger.info(f"Input: {test_messages[0]['content']}")
-    logger.info(f"Output: {new_response}")
+        
+        inputs = tokenizer(formatted_input, return_tensors="pt")
+        
+        with torch.no_grad():
+            outputs = model.generate(
+                **inputs,
+                max_new_tokens=100,  # ORIGINAL: 100 tokens
+                do_sample=True,
+                temperature=0.7,
+                pad_token_id=tokenizer.eos_token_id,
+                eos_token_id=tokenizer.eos_token_id,
+                use_cache=False
+            )
+        
+        full_response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        response_start = full_response.find(formatted_input) + len(formatted_input)
+        new_response = full_response[response_start:].strip()
+        
+        logger.info(f"📝 Test {i}:")
+        logger.info(f"   Input: {question}")
+        logger.info(f"   Output: {new_response}")
+        logger.info("")
 
 def main():
-    """Main training pipeline"""
-    print("🎯 Starting Tiny SFT Training Pipeline")
-    print("=" * 50)
+    """Main training pipeline with ORIGINAL parameters"""
+    print("🎯 Original Parameters SFT Training Pipeline")
+    print("📋 Using the COMPLETE original specification")
+    print("💻 CPU-optimized to avoid 4GB GPU limitation")
+    print("=" * 60)
+    
+    print("\n📊 ORIGINAL PARAMETERS:")
+    print("   📁 Dataset: ALL 26 samples")
+    print("   📏 Max length: 512 tokens")
+    print("   🔄 Epochs: 3")
+    print("   📦 Batch size: 2")
+    print("   📈 Learning rate: 5e-5")
+    print("   🎯 LoRA: r=16, alpha=32, 4 modules")
+    print("   ⏰ Expected time: 15-30 minutes")
+    print("-" * 60)
     
     try:
-        # 1. Load dataset
+        # 1. Load full dataset
         conversations = load_dataset("dataset.jsonl")
         
-        # 2. Setup model and tokenizer
+        # 2. Setup model and tokenizer with original LoRA
         model, tokenizer = setup_model_and_tokenizer()
         
-        # 3. Prepare training data
+        # 3. Prepare training data with original max_length
         train_dataset = prepare_data(conversations, tokenizer)
         
-        # 4. Train the model
+        # 4. Train with original parameters
         trainer = train_model(model, tokenizer, train_dataset)
         
         # 5. Test the model
         test_model(model, tokenizer)
         
-        print("\n🎉 Training pipeline completed successfully!")
+        print("\n🎉 Original parameters training completed successfully!")
         print(f"📁 Model saved in: ./trained_model")
-        print("🔄 You can now run evaluation tests!")
+        print("🏆 This is your FULL QUALITY SFT model!")
+        print("📈 Expect significantly better responses than lightweight version")
         
     except Exception as e:
         logger.error(f"❌ Training failed: {e}")
         raise
 
 if __name__ == "__main__":
-    main() 
+    main()
+
+# ORIGINAL VS LIGHTWEIGHT COMPARISON:
+"""
+🔄 PARAMETER CHANGES FROM LIGHTWEIGHT → ORIGINAL:
+
+DATASET:
+- Samples: 10 → 26 (2.6x more data)
+- Max length: 256 → 512 tokens (2x longer sequences)
+
+TRAINING:
+- Epochs: 1 → 3 (3x more training)
+- Batch size: 1 → 2 (2x larger batches)
+- Learning rate: 2e-5 → 5e-5 (2.5x higher)
+- Warmup: 5 → 50 steps (10x more warmup)
+
+LORA:
+- Rank: 8 → 16 (2x more parameters)
+- Alpha: 16 → 32 (2x scaling)
+- Modules: 2 → 4 (2x more target modules)
+
+🎯 EXPECTED QUALITY IMPROVEMENTS:
+- Much better instruction following
+- More coherent and complete responses
+- Better context understanding
+- More diverse vocabulary usage
+- Improved politeness and helpfulness
+
+⚠️ TRADE-OFFS:
+- Longer training time (15-30 minutes vs 3-4 minutes)
+- Higher CPU usage during training
+- More memory usage
+- Better final model quality
+""" 
