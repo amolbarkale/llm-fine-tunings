@@ -183,30 +183,30 @@ def test_model(model, tokenizer):
     
     for i, question in enumerate(test_cases, 1):
         test_messages = [{"role": "user", "content": question}]
-        
-        formatted_input = tokenizer.apply_chat_template(
-            test_messages,
-            tokenize=False,
-            add_generation_prompt=True
-        )
-        
-        inputs = tokenizer(formatted_input, return_tensors="pt")
-        
-        with torch.no_grad():
-            outputs = model.generate(
-                **inputs,
+    
+    formatted_input = tokenizer.apply_chat_template(
+        test_messages,
+        tokenize=False,
+        add_generation_prompt=True
+    )
+    
+    inputs = tokenizer(formatted_input, return_tensors="pt")
+    
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
                 max_new_tokens=100,  # ORIGINAL: 100 tokens
-                do_sample=True,
-                temperature=0.7,
+            do_sample=True,
+            temperature=0.7,
                 pad_token_id=tokenizer.eos_token_id,
                 eos_token_id=tokenizer.eos_token_id,
                 use_cache=False
-            )
-        
-        full_response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        response_start = full_response.find(formatted_input) + len(formatted_input)
-        new_response = full_response[response_start:].strip()
-        
+        )
+    
+    full_response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    response_start = full_response.find(formatted_input) + len(formatted_input)
+    new_response = full_response[response_start:].strip()
+    
         logger.info(f"📝 Test {i}:")
         logger.info(f"   Input: {question}")
         logger.info(f"   Output: {new_response}")
@@ -255,7 +255,7 @@ def main():
         raise
 
 if __name__ == "__main__":
-    main()
+    main() 
 
 # ORIGINAL VS LIGHTWEIGHT COMPARISON:
 """
