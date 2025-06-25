@@ -8,7 +8,7 @@ import google.generativeai as genai
 load_dotenv()
 
 # Configure Gemini
-api_key = os.environ.get("GEMINI_API_KEY", "YOUR_API_KEY_HERE")
+api_key = os.environ.get("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 client = genai.GenerativeModel('gemini-2.0-flash-exp')
 
@@ -41,8 +41,29 @@ def python_exec(code: str) -> str:
     sys.stdout = new_stdout
     
     try:
-        # Execute the code in a restricted environment
-        exec(code, {"__builtins__": {}}, {})
+        # Create safe environment with essential functions
+        safe_globals = {
+            "__builtins__": {
+                "len": len,
+                "print": print,
+                "str": str,
+                "int": int,
+                "float": float,
+                "list": list,
+                "dict": dict,
+                "sum": sum,
+                "max": max,
+                "min": min,
+                "range": range,
+                "enumerate": enumerate,
+                "zip": zip,
+                "abs": abs,
+                "round": round,
+            }
+        }
+        
+        # Execute the code in safe environment
+        exec(code, safe_globals, {})
         output = new_stdout.getvalue().strip()
         return output if output else "Code executed successfully (no output)"
     except Exception as e:
@@ -129,6 +150,7 @@ def run_agent():
     ]
     
     print("🤖 Enhanced Tool-Calling Agent Ready!")
+    print("Specialized in counting and arithmetic problems.")
     print("Type 'exit' to quit.\n")
     
     while True:
@@ -210,5 +232,3 @@ def run_agent():
 
 if __name__ == "__main__":
     run_agent()
-    
-   
