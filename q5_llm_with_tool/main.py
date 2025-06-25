@@ -5,6 +5,9 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
+from tools.math_tools import python_exec
+from tools.string_tools import string_counter
+
 load_dotenv()
 
 # Configure Gemini
@@ -30,62 +33,24 @@ def convert_messages_to_gemini(messages):
     
     return "\n\n".join(prompt_parts)
 
-def python_exec(code: str) -> str:
-    """Execute Python code and return the stdout output."""
-    print("🔨 Tool Called: python_exec")
-    print(f"Code: {code}")
-    
-    # Capture stdout
-    old_stdout = sys.stdout
-    new_stdout = io.StringIO()
-    sys.stdout = new_stdout
-    
-    try:
-        # Create safe environment with essential functions
-        safe_globals = {
-            "__builtins__": {
-                "len": len,
-                "print": print,
-                "str": str,
-                "int": int,
-                "float": float,
-                "list": list,
-                "dict": dict,
-                "sum": sum,
-                "max": max,
-                "min": min,
-                "range": range,
-                "enumerate": enumerate,
-                "zip": zip,
-                "abs": abs,
-                "round": round,
-            }
-        }
-        
-        # Execute the code in safe environment
-        exec(code, safe_globals, {})
-        output = new_stdout.getvalue().strip()
-        return output if output else "Code executed successfully (no output)"
-    except Exception as e:
-        return f"Error: {str(e)}"
-    finally:
-        # Restore stdout
-        sys.stdout = old_stdout
 
 def noop(message: str = "") -> str:
     """No operation tool - used for conversational responses."""
     print("🔨 Tool Called: noop")
     return "Ready for conversational response"
 
-# Enhanced tool registry for counting and arithmetic
 available_tools = {
     "python_exec": {
         "fn": python_exec,
-        "description": "Execute Python code for counting characters, arithmetic operations, or any computation. Input should be valid Python code."
+        "description": "Execute mathematical calculations and expressions. Input should be a valid mathematical expression."
+    },
+    "string_counter": {
+        "fn": string_counter,
+        "description": "Count characters, words, vowels, or analyze strings. Input should be valid Python code for string operations."
     },
     "noop": {
         "fn": noop,
-        "description": "Use for regular conversational responses that don't require computation or when providing explanations."
+        "description": "Use for regular conversational responses that don't require computation."
     }
 }
 
@@ -124,23 +89,23 @@ Available Tools:
 
 Examples:
 
-User Query: How many 'r' in 'strawberry'?
-{{ "step": "plan", "content": "User wants to count occurrences of 'r' in 'strawberry'. I need to use python_exec for accurate counting." }}
-{{ "step": "action", "function": "python_exec", "input": "text = 'strawberry'\\ncount = len([c for c in text if c == 'r'])\\nprint(count)" }}
+User Query: What's the square root of the average of 18 and 50?
+{{ "step": "plan", "content": "User wants to calculate square root of average of two numbers. I need to use calculator for this mathematical operation." }}
+{{ "step": "action", "function": "calculator", "input": "sqrt(avg(18, 50))" }}
 [Wait for observation]
-{{ "step": "output", "content": "There are 3 occurrences of 'r' in 'strawberry'." }}
+{{ "step": "output", "content": "The square root of the average of 18 and 50 is [result from tool]." }}
 
-User Query: What's 847 * 293 + 156?
-{{ "step": "plan", "content": "User wants arithmetic calculation. I'll use python_exec for precise computation." }}
-{{ "step": "action", "function": "python_exec", "input": "result = 847 * 293 + 156\\nprint(result)" }}
+User Query: How many vowels are in the word 'Multimodality'?
+{{ "step": "plan", "content": "User wants to count vowels in a word. I need to use string_counter for this text analysis." }}
+{{ "step": "action", "function": "string_counter", "input": "word = 'Multimodality'\\nvowels = 'aeiouAEIOU'\\ncount = sum(1 for char in word if char in vowels)\\nprint(count)" }}
 [Wait for observation]
-{{ "step": "output", "content": "The result of 847 * 293 + 156 is [result from tool]." }}
+{{ "step": "output", "content": "The word 'Multimodality' contains [result from tool] vowels." }}
 
-User Query: Explain what def f(x): return x**2 does
-{{ "step": "plan", "content": "User wants an explanation of a function, not execution. I'll use noop for conversational response." }}
-{{ "step": "action", "function": "noop", "input": "explaining function" }}
+User Query: Is the number of letters in 'machine' greater than the number of vowels in 'reasoning'?
+{{ "step": "plan", "content": "User wants to compare letter count in one word with vowel count in another. I need string_counter for this comparison." }}
+{{ "step": "action", "function": "string_counter", "input": "word1 = 'machine'\\nword2 = 'reasoning'\\nvowels = 'aeiouAEIOU'\\nletters_count = len(word1)\\nvowels_count = sum(1 for char in word2 if char in vowels)\\nprint(f'Letters in machine: letters_count')\\nprint(f'Vowels in reasoning: vowels_count')\\nprint(f'Is letters_count > vowels_count? letters_count > vowels_count')" }}
 [Wait for observation]
-{{ "step": "output", "content": "This function defines f(x) that takes a parameter x and returns x squared (x to the power of 2). For example, f(3) would return 9." }}
+{{ "step": "output", "content": "The word 'machine' has [X] letters and 'reasoning' has [Y] vowels. [Comparison result]." }}
 """
 
 def run_agent():
