@@ -1,0 +1,21 @@
+prompt,answer,rank
+Tell me a joke about robots,Why did the robot go to therapy? It had too many breakdowns.,1
+Tell me a joke about robots,Knock knock. Who’s there? Robot. Robot who? Robot you glad I didn’t say banana?,4
+Tell me a joke about robots,Robots are taking over but they still can’t make a decent coffee.,3
+Tell me a joke about robots,A robot walks into a bar... and orders a byte.,2
+Summarize the following paragraph: 'Climate change affects us all...',Climate change is the long-term alteration of temperature and typical weather patterns in a place.,2
+Summarize the following paragraph: 'Climate change affects us all...',It refers to significant changes in global temperatures and weather patterns over time.,3
+Summarize the following paragraph: 'Climate change affects us all...',"Human activity, especially the burning of fossil fuels, is a major contributor to climate change.",4
+Summarize the following paragraph: 'Climate change affects us all...',"Scientists study how greenhouse gases trap heat in the atmosphere, driving climate change.",1
+Write a mini-essay on the importance of biodiversity.,Biodiversity ensures ecosystem resilience and provides essential services like pollination.,1
+Write a mini-essay on the importance of biodiversity.,The variety of life on Earth supports food security and human health.,2
+Write a mini-essay on the importance of biodiversity.,Biodiversity loss can lead to ecosystem collapse and reduced natural resources.,4
+Write a mini-essay on the importance of biodiversity.,Protecting biodiversity maintains balance in ecosystems and benefits all species.,3
+"Translate to French: 'Good morning, how are you?'","Bonjour, comment ça va aujourd'hui?",3
+"Translate to French: 'Good morning, how are you?'","Bonjour, comment allez-vous ce matin?",1
+"Translate to French: 'Good morning, how are you?'",Salut! Comment te sens-tu ce matin?,4
+"Translate to French: 'Good morning, how are you?'",Bonjour! Ça va bien?,2
+Start a friendly conversation with a user interested in AI.,Hi there! AI is transforming many industries—what interests you most?,2
+Start a friendly conversation with a user interested in AI.,Hello! Are you curious about how AI can help in daily life?,1
+Start a friendly conversation with a user interested in AI.,Hey! What do you think about the recent advances in AI?,3
+Start a friendly conversation with a user interested in AI.,Greetings! Let’s chat about AI—what’s your favorite application?,4
